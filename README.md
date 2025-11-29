@@ -178,6 +178,47 @@ Ctrl + Shift + F10
 - Cách viết README.md như một báo cáo kỹ thuật
 
 ---
+---
+
+# 9. Các bước em thực hiện sau khi tất cả test passed
+
+Khi toàn bộ test đều passed và coverage đạt 100%, em **không dừng lại tại đó**, mà tiếp tục làm thêm các bước sau để đảm bảo chất lượng:
+
+### 1️⃣ Rà soát lại phạm vi kiểm thử (Test Coverage Review)
+- Kiểm tra lại xem mỗi hàm (`parseScore`, `isValid`, `sum`, `average`, `classify`, `passOrFail`, `finalResult`, `finalResultFromString`) đều có test riêng.
+- Đảm bảo cả 3 nhóm **Happy / Edge / Error Case** đều đã được bao phủ.
+- Xem lại các nhánh if/else để chắc chắn không có nhánh nào chưa được test tới.
+
+### 2️⃣ Kiểm tra chất lượng của từng test case
+- Đọc lại tên test xem đã mô tả đúng mục đích chưa (dễ hiểu khi nhìn vào).
+- Kiểm tra phần `assert` để tránh những test “pass cho có” (ví dụ: `assertTrue(true)`).
+- Loại bỏ những test trùng lặp, giữ lại các test quan trọng và có ý nghĩa.
+
+### 3️⃣ Thử suy nghĩ theo hướng “mutation testing” (phá code để kiểm tra test)
+- Nghĩ trong đầu (hoặc thử sửa nhẹ) một số đoạn logic, ví dụ:
+  - Bỏ bớt điều kiện trong `isValid`
+  - Thay đổi ngưỡng phân loại trong `classify`
+- Ý tưởng: nếu em sửa sai logic mà **test không fail**, nghĩa là test chưa đủ mạnh và em cần bổ sung thêm case.
+
+### 4️⃣ Refactor code dựa trên sự bảo vệ của Unit Test
+- Dọn code sạch hơn (đặt lại tên biến/hàm cho rõ nghĩa hơn).
+- Xóa code không dùng (dead code) nếu có.
+- Tự tin thay đổi vì đã có bộ test 100% coverage hỗ trợ – nếu lỡ sửa sai, test sẽ báo ngay.
+
+### 5️⃣ Rà soát lại các trường hợp biên & lỗi
+- Kiểm tra đã có test cho:
+  - Điểm biên: 0, 10, tổng = 15.
+  - Chuỗi đặc biệt: rỗng, chỉ toàn khoảng trắng, `NaN`, `Infinity`.
+- Đảm bảo chương trình xử lý an toàn, không bị crash với input xấu.
+
+### 6️⃣ Cập nhật lại tài liệu (README.md & báo cáo)
+- Ghi lại kiến trúc hàm, flow xử lý, chiến lược test.
+- Ghi rõ cách phân loại Happy/Edge/Error.
+- Bổ sung mục này để trình bày với giảng viên rằng:  
+  > “Test passed không phải là kết thúc, mà là điểm bắt đầu để em đánh giá chất lượng test và chất lượng code.”
+
+---
+
 
 
 
