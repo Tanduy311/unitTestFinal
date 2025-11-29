@@ -34,7 +34,7 @@ Toàn bộ logic đều là **pure functions**, không cần sử dụng Mock, S
 | `sum(a,b,c)` | Tính tổng 3 môn | `double` | Không kiểm tra hợp lệ |
 | `average(total)` | Tính điểm trung bình | `double` | total / 3 |
 | `classify(avg)` | Xếp loại học lực | `String` | Giỏi / Khá / Trung bình / Yếu |
-| `passOrFail(a,b,c)` | Kiểm tra đậu/rớt | `"Đậu"` / `"Rớt"` | Tổng ≥ 15 |
+| `passOrFail(a,b,c)` | Kiểm tra đậu/rớt | `"Đậu"` / `"Rớt"` | Tổng > 15 |
 | `finalResult(a,b,c)` | Tổng hợp kết quả từ 3 điểm | `String` | Gọi nhiều hàm con |
 | `finalResultFromString(s1,s2,s3)` | Input chuỗi → kết quả cuối | `String` | Hàm cấp cao nhất |
 
@@ -64,8 +64,8 @@ classify(avg)
 passOrFail(a,b,c)
         │
         ▼
-[ Kết quả cuối: Xếp loại + Đậu/Rớt ]
-
+total > 15 → "Đậu"
+else       → "Rớt"
 ```
 
 Sơ đồ cho thấy toàn bộ chương trình được xây từ các hàm thuần nhỏ → đúng triết lý Unit Testing.
@@ -94,12 +94,13 @@ Các trường hợp chạy đúng logic:
 
 Các giá trị “nhạy cảm” có khả năng gây lỗi:
 
-- Điểm = 0
-- Điểm = 10
-- Tổng = **15** (vừa đủ đậu)
-- Chuỗi `" 8 "` có khoảng trắng
-- Trung bình = 4.99999 → kiểm tra delta
-- Ngưỡng phân loại: 5.0, 6.5, 8.0
+- Điểm = 0  
+- Điểm = 10  
+- Tổng = **15** → *Rớt (vì phải > 15 mới đậu)*  
+- Tổng = **15.1** → *Đậu (boundary test)*  
+- Chuỗi `" 8 "` có khoảng trắng  
+- Trung bình = 4.99999 → kiểm tra delta  
+- Ngưỡng phân loại: 5.0, 6.5, 8.0  
 
 ---
 
@@ -122,11 +123,9 @@ Kiểm thử nhóm này đảm bảo chương trình ổn định và an toàn.
 
 Dự án đạt:
 
-### ✔ 100% Line Coverage
-### ✔ Kiểm thử tất cả nhánh logic
-### ✔ Không có dòng code nào không được kiểm tra
-
-Điều này chứng minh chất lượng test cao và bao phủ toàn bộ hành vi của chương trình.
+### ✔ 100% Line Coverage  
+### ✔ Kiểm thử tất cả nhánh logic  
+### ✔ Không có dòng code nào không được kiểm tra  
 
 ---
 
@@ -146,8 +145,8 @@ test/
 ```
 
 ### 🎯 Vai trò của `BaseMainTest`
-- Khởi tạo object `Main` dùng chung cho tất cả test
-- Không lặp lại code
+- Khởi tạo object `Main` dùng chung cho tất cả test  
+- Không lặp lại code  
 - Giúp test ngắn gọn, sạch, đúng chuẩn **DRY – Don’t Repeat Yourself**
 
 ---
@@ -174,53 +173,48 @@ Ctrl + Shift + F10
 - Tư duy kiểm thử phân loại Happy/Edge/Error
 - Tạo test tách file theo từng chức năng
 - Hiểu sâu về coverage và cách đạt 100%
+- Hiểu rõ ràng threshold > 15 cho điều kiện đậu/rớt
 - Khi nào cần/không cần Mock, Stub, Fake
 - Cách viết README.md như một báo cáo kỹ thuật
 
----
 ---
 
 # 9. Các bước em thực hiện sau khi tất cả test passed
 
 Khi toàn bộ test đều passed và coverage đạt 100%, em **không dừng lại tại đó**, mà tiếp tục làm thêm các bước sau để đảm bảo chất lượng:
 
-### 1️⃣ Rà soát lại phạm vi kiểm thử (Test Coverage Review)
-- Kiểm tra lại xem mỗi hàm (`parseScore`, `isValid`, `sum`, `average`, `classify`, `passOrFail`, `finalResult`, `finalResultFromString`) đều có test riêng.
-- Đảm bảo cả 3 nhóm **Happy / Edge / Error Case** đều đã được bao phủ.
-- Xem lại các nhánh if/else để chắc chắn không có nhánh nào chưa được test tới.
+### 1️⃣ Rà soát lại phạm vi kiểm thử
+- Kiểm tra xem mỗi hàm đã có test riêng  
+- Đảm bảo đủ Happy / Edge / Error Case  
+- Xem lại toàn bộ nhánh if/else có bị sót không  
 
-### 2️⃣ Kiểm tra chất lượng của từng test case
-- Đọc lại tên test xem đã mô tả đúng mục đích chưa (dễ hiểu khi nhìn vào).
-- Kiểm tra phần `assert` để tránh những test “pass cho có” (ví dụ: `assertTrue(true)`).
-- Loại bỏ những test trùng lặp, giữ lại các test quan trọng và có ý nghĩa.
+### 2️⃣ Kiểm tra chất lượng test case
+- Đặt tên test rõ nghĩa  
+- Tránh test yếu (ví dụ assertTrue(true))  
+- Giảm trùng lặp, đảm bảo mỗi test kiểm đúng 1 hành vi  
 
-### 3️⃣ Thử suy nghĩ theo hướng “mutation testing” (phá code để kiểm tra test)
-- Nghĩ trong đầu (hoặc thử sửa nhẹ) một số đoạn logic, ví dụ:
-  - Bỏ bớt điều kiện trong `isValid`
-  - Thay đổi ngưỡng phân loại trong `classify`
-- Ý tưởng: nếu em sửa sai logic mà **test không fail**, nghĩa là test chưa đủ mạnh và em cần bổ sung thêm case.
+### 3️⃣ Mutation Testing (suy nghĩ phá code)
+- Thử sửa `>` thành `>=` trong `passOrFail` để xem test có phát hiện lỗi không  
+- Thử đổi ngưỡng classify để kiểm tra độ mạnh của test  
+- Nếu test không fail → test chưa đủ tốt → bổ sung  
 
 ### 4️⃣ Refactor code dựa trên sự bảo vệ của Unit Test
-- Dọn code sạch hơn (đặt lại tên biến/hàm cho rõ nghĩa hơn).
-- Xóa code không dùng (dead code) nếu có.
-- Tự tin thay đổi vì đã có bộ test 100% coverage hỗ trợ – nếu lỡ sửa sai, test sẽ báo ngay.
+- Làm sạch code  
+- Xóa dead code  
+- Cấu trúc lại logic nếu cần  
+- Chạy lại toàn bộ test để đảm bảo không phá gì  
 
-### 5️⃣ Rà soát lại các trường hợp biên & lỗi
-- Kiểm tra đã có test cho:
-  - Điểm biên: 0, 10, tổng = 15.
-  - Chuỗi đặc biệt: rỗng, chỉ toàn khoảng trắng, `NaN`, `Infinity`.
-- Đảm bảo chương trình xử lý an toàn, không bị crash với input xấu.
+### 5️⃣ Rà soát lại biên & lỗi
+- test tổng = 15 → Rớt  
+- test tổng = 15.1 → Đậu  
+- test NaN / Infinity / khoảng trắng  
 
-### 6️⃣ Cập nhật lại tài liệu (README.md & báo cáo)
-- Ghi lại kiến trúc hàm, flow xử lý, chiến lược test.
-- Ghi rõ cách phân loại Happy/Edge/Error.
-- Bổ sung mục này để trình bày với giảng viên rằng:  
-  > “Test passed không phải là kết thúc, mà là điểm bắt đầu để em đánh giá chất lượng test và chất lượng code.”
+### 6️⃣ Cập nhật README và tài liệu
+- Ghi lại logic đậu/rớt chính xác  
+- Điều chỉnh diagram  
+- Bổ sung boundary test mới  
 
 ---
-
-
-
 
 # 👤 Maintainer
 **Nguyễn Duy Tân**
